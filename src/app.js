@@ -1,16 +1,26 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import app from './server';
-import upload from './upload';
+import db from './db';
 
-const PORT = 3000;
+import PhotoRouter from './routers/photo-router';
 
-app.get('/', (req, res) => {
-  res.send('Camerwa API');
-});
+const PORT = process.env.PORT || 3000;
 
-app.post('/photo', upload.single('photo'), (req, res) => {
-  res.send('OK');
-});
+async function init() {
+  await db.connect();
+  console.log('DB connected');
 
-app.listen(PORT, () => {
-  console.log(`API rodando na porta ${PORT}`);
-});
+  PhotoRouter(app);
+
+  app.get('/', (req, res) => {
+    res.send('Camerwa API');
+  });
+
+  app.listen(PORT, () => {
+    console.log(`API running on ${PORT}`);
+  });
+}
+
+init();
